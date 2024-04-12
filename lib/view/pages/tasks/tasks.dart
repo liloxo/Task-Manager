@@ -54,6 +54,10 @@ class Tasks extends StatelessWidget {
                   return const SizedBox();
                 },
                 listener: (BuildContext context, TasksState state) {
+                  if (state is TasksSuccess && state.message != null) {
+                    ScaffoldMessenger.of(context)
+                        .showSnackBar(SnackBar(content: Text(state.message!)));
+                  }
                   if (state is ExcutionFailed) {
                     ScaffoldMessenger.of(context)
                         .showSnackBar(SnackBar(content: Text(state.error)));

@@ -22,7 +22,6 @@ filteringSheet(BuildContext context) {
               TextButton(
                   onPressed: () {
                     tasksBloc.add(GetTasks());
-                    tasksBloc.forpagination = true;
                     Navigator.of(context).pop();
                   },
                   child: Text(
@@ -32,7 +31,6 @@ filteringSheet(BuildContext context) {
               TextButton(
                   onPressed: () {
                     tasksBloc.add(GetTaskById());
-                    tasksBloc.forpagination = false;
                     Navigator.of(context).pop();
                   },
                   child: Text(
@@ -42,7 +40,6 @@ filteringSheet(BuildContext context) {
               TextButton(
                   onPressed: () {
                     tasksBloc.add(GetRandomTask());
-                    tasksBloc.forpagination = false;
                     Navigator.of(context).pop();
                   },
                   child:

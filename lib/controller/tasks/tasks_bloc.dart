@@ -55,15 +55,17 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
   _getTaskbyid(TasksEvent event, Emitter<TasksState> emit) async {
     skip = 0;
     emit(TasksLoading());
+    forpagination = false;
     int userid = sharedPreferences.getInt('userid')!;
     var response = await taskData.getTasksbyid(userid);
     var res = handlingData(response);
     if (res == StatusRequest.offlinefailure) {
-      var localresponse = taskdataLocal.gettasks();
+      var localresponse = taskdataLocal.getTaskbyid();
       if (localresponse == StatusRequest.failure) {
         emit(const TasksFailure(error: 'No data found'));
       } else {
-        emit(TasksSuccess(tasksModel: localresponse));
+        tasksModel = localresponse;
+        emit(TasksSuccess(tasksModel: tasksModel));
       }
       return;
     }
@@ -84,14 +86,16 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
   _getRandomtask(TasksEvent event, Emitter<TasksState> emit) async {
     skip = 0;
     emit(TasksLoading());
+    forpagination = false;
     var response = await taskData.getRandomtask();
     var res = handlingData(response);
     if (res == StatusRequest.offlinefailure) {
-      var localresponse = taskdataLocal.gettasks();
+      var localresponse = taskdataLocal.getRandom();
       if (localresponse == StatusRequest.failure) {
         emit(const TasksFailure(error: 'No data found'));
       } else {
-        emit(TasksSuccess(tasksModel: localresponse));
+        tasksModel = localresponse;
+        emit(TasksSuccess(tasksModel: tasksModel));
       }
       return;
     }
@@ -111,6 +115,7 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
 
   _getTasks(GetTasks event, Emitter<TasksState> emit) async {
     emit(TasksLoading());
+    forpagination = true;
     var response = await taskData.getdata(10, skip);
     var res = handlingData(response);
     if (res == StatusRequest.offlinefailure) {
@@ -118,7 +123,8 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
       if (localresponse == StatusRequest.failure) {
         emit(const TasksFailure(error: 'No data found'));
       } else {
-        emit(TasksSuccess(tasksModel: localresponse));
+        tasksModel = localresponse;
+        emit(TasksSuccess(tasksModel: tasksModel));
       }
       return;
     }
@@ -152,6 +158,9 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
 
       emit(const ExcutionSucceed(message: 'Task Added Successfully'));
       emit(TasksSuccess(tasksModel: tasksModel));
+    } else if (res == StatusRequest.offlinefailure) {
+      emit(TasksSuccess(
+          tasksModel: tasksModel, message: 'No Internet connection'));
     } else {
       emit(ExcutionFailed(error: checkstatus(response, 'Adding Task Failed')));
     }
@@ -186,6 +195,9 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
       tasksModel![index] = editedTask;
       emit(const ExcutionSucceed(message: 'Task Edited Successfully'));
       emit(TasksSuccess(tasksModel: tasksModel));
+    } else if (res == StatusRequest.offlinefailure) {
+      emit(TasksSuccess(
+          tasksModel: tasksModel, message: 'No Internet connection'));
     } else {
       emit(ExcutionFailed(error: checkstatus(response, 'Editing Task Failed')));
     }
@@ -194,16 +206,20 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
   _deleteTasks(DeleteTask event, Emitter<TasksState> emit) async {
     if (event.id == 151) {
       tasksModel!.removeWhere((element) => element.id == event.id);
-      emit(const ExcutionSucceed(message: 'Task Deleted Successfully'));
-      emit(TasksSuccess(tasksModel: tasksModel));
+      emit(TasksSuccess(
+          tasksModel: tasksModel, message: 'Task Deleted Successfully'));
       return;
     }
     var response = await taskData.deleteData(event.id);
     var res = handlingData(response);
     if (res == StatusRequest.success) {
       tasksModel!.removeWhere((element) => element.id == event.id);
-      emit(const ExcutionSucceed(message: 'Task Deleted Successfully'));
-      emit(TasksSuccess(tasksModel: tasksModel));
+      emit(TasksSuccess(
+          tasksModel: tasksModel, message: 'Task Deleted Successfully'));
+    } else if (res == StatusRequest.offlinefailure) {
+      tasksModel!.removeWhere((element) => element.id == event.id);
+      emit(TasksSuccess(
+          tasksModel: tasksModel, message: 'Task Deleted Successfully'));
     } else {
       emit(
           ExcutionFailed(error: checkstatus(response, 'Deleting Task Failed')));

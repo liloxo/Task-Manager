@@ -17,7 +17,12 @@ final class TasksFailure extends TasksState {
 final class TasksSuccess extends TasksState {
   final List<TaskModel>? tasksModel;
   final bool pagination;
-  const TasksSuccess({this.tasksModel, this.pagination = false});
+  final String? message;
+  const TasksSuccess({
+    this.tasksModel,
+    this.pagination = false,
+    this.message,
+  });
 }
 
 final class ExcutionFailed extends TasksState {
