@@ -23,7 +23,7 @@ class HiUser extends StatelessWidget {
         ),
         Container(
           margin: EdgeInsets.only(left: 20.w),
-          width: 205.w,
+          width: 200.w,
           child: Text.rich(
               TextSpan(children: [
                 TextSpan(
@@ -45,9 +45,8 @@ class HiUser extends StatelessWidget {
               Navigator.of(context)
                   .pushNamedAndRemoveUntil('/auth', (route) => false);
             },
-            icon: Icon(
+            icon: const Icon(
               Icons.logout,
-              size: 22.h,
               color: AppColors.primary,
             ))
       ],
